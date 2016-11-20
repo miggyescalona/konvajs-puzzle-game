@@ -36,7 +36,7 @@
 		<div class="col-md-3" id="right">
 			  <h2>KONVA PUZZLE GAME</h2>
 			  <p id ="instruct">The tiles merges into a single image <br>once the game is beaten on Shuffle Mode.</p>
-			  <p id="counter">Counter: 0</p>
+			  <p id="counter">Moves: 0</p>
 			  <div id="shufflediv">
 			      <button type="button" id="shuffle">Shuffle</button>
 			  </div>
@@ -210,7 +210,7 @@ movescounter = 0;
      });
 
 function moveCounter(){
-  document.getElementById("counter").innerHTML = "Counter: " + movescounter;
+  document.getElementById("counter").innerHTML = "Moves: " + movescounter;
 }
 
    //TILE MOVES
