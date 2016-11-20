@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Konva Puzzle Game</title>
+   <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+   <meta charset="utf-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #F0F0F0;
+      width:100%;
+      height: 100%;
+    }	
+
+    #middle{
+    	top:10%;
+    }
+
+    #right{
+    	top:25px;
+    	left:-17%;
+    }
+
+
+  </style>
+</head>
+<body>
+<div class="container">
+	<div class="row">
+		<div class="col-md-3" id="left"></div>
+		<div class="col-md-6" id="middle">
+		  <div id="container"></div>
+		</div> 
+		<div class="col-md-3" id="right">
+			  <h2>KONVA PUZZLE GAME</h2>
+			  <p id ="instruct">The tiles merges into a single image <br>once the game is beaten on Shuffle Mode.</p>
+			  <p id="counter">Counter: 0</p>
+			  <div id="shufflediv">
+			      <button type="button" id="shuffle">Shuffle</button>
+            <button type="button" id="merge">Merge</button>
+			  </div>
+		</div> 	  	
+	</div>	    
+</div>  
+  <script src="./js/jquery-3.1.1.min.js"></script>
+  <script src="./js/konva.min.js"></script>
+  <script>
+
+
+        var sources = {
+        image0: '0.png',
+        image1: '1.png',
+        image2: '2.png',
+        image3: '3.png',
+        image4: '4.png',
+        image5: '5.png',
+        image6: '6.png',
+        image7: '7.png',
+    };
+
+
+   function loadImages(sources, callback) {
+    var images = {};
+    var loadedImages = 0;
+    var numImages = 0;
+    // get num of sources
+    for(var src in sources) {
+        numImages++;
+    }
+    for(var src in sources) {
+        images[src] = new Image();
+        images[src].onload = function() {
+            if(++loadedImages >= numImages) {
+                callback(images);
+            }
+        };
+        images[src].src = sources[src];
+        }
+    }
+
+  function draw(images){
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    var stage = new Konva.Stage({
+      container: 'container',
+      width: width,
+      height: height
+    });
+
+
+    var layer = new Konva.Layer();
+
+  var img0 = new Konva.Image({
+        x: 50,
+        y: 50,
+        image: images.image0,
+        width: 106,
+        height: 118
+      });
+
+      var img1 = new Konva.Image({
+        x: 160,
+        y: 50,
+        image: images.image1,
+        width: 106,
+        height: 118
+      });
+
+      var img2 = new Konva.Image({
+        x: 270,
+        y: 50,
+        image: images.image2,
+        width: 106,
+        height: 118
+      });
+
+
+      var img3 = new Konva.Image({
+        x: 50,
+        y: 175,
+        image: images.image3,
+        width: 106,
+        height: 118
+      });
+
+
+      var img4 = new Konva.Image({
+        x: 160,
+        y: 175,
+        image: images.image4,
+        width: 106,
+        height: 118
+      });
+
+
+      var img5 = new Konva.Image({
+        x: 270,
+        y: 175,
+        image: images.image5,
+        width: 106,
+        height: 118
+      });
+
+
+      var img6 = new Konva.Image({
+        x: 50,
+        y: 300,
+        image: images.image6,
+        width: 106,
+        height: 118
+      });
+
+
+      var img7 = new Konva.Image({
+        x: 160,
+        y: 300,
+        image: images.image7,
+        width: 106,
+        height: 118
+      });
+
+      var rect = new Konva.Rect({
+        x: 270,
+        y: 300,
+        width: 106,
+        height: 118,
+        fill: 'white',
+        stroke: 'black',
+        strokeWidth: 0
+       });
+
+      var imglist = [img0,img1,img2,img3,img4,img5,img6,img7];
+      var coords = [[50,50],[160,50],[270,50],[50,175],[160,175],[270,175],[50,300],[160,300]];
+
+shufflecounter = 0;
+movescounter = 0;
+
+
+      //SHUFFLE
+      $("#shuffle").on("click", function(){
+
+        var len = coords.length;
+        var chosen = [];
+
+        for (var i = 0; i<=7; i++) {
+        var randy = Math.floor(Math.random() * len);  
+        chosen[i] = coords[randy];
+
+        for (k=0; k<=i-1; k++) {
+        if (chosen[k] == chosen[i]) {
+        i--;  // duplicate found so decrement i
+        }
+        }
+
+        }
+
+        for(a in chosen){
+        imglist[a].setX(chosen[a][0]);
+        imglist[a].setY(chosen[a][1]);
+        }
+        rect.setX(270);
+        rect.setY(300);
+
+        layer.draw();
+        shufflecounter++;
+        movescounter = 0;
+        moveCounter();
+     });
+
+function moveCounter(){
+  document.getElementById("counter").innerHTML = "Counter: " + movescounter;
+}
+
+   //TILE MOVES
+
+   img0.on("click", function(){
+
+        
+
+     var rectX= rect.getX();
+     var imgX= img0.getX();
+
+     var rectY= rect.getY();
+     var imgY= img0.getY();
+
+    var resultRect = rectX + rectY;
+    var resultImg = imgX + imgY;
+    var result = resultRect - resultImg;
+
+    if((result == 125 || result == -125 || result == 110 || result == -110)){
+        img0.setX(rectX);
+        rect.setX(imgX);
+        img0.setY(rectY);
+        rect.setY(imgY);
+               movescounter++;
+    }
+
+       layer.draw();
+           moveCounter(); 
+       if(shufflecounter != 0){   
+    Tween();
+    }
+    });
+
+
+
+   img1.on("click", function(){
+
+        
+
+     var rectX= rect.getX();
+     var imgX= img1.getX();
+
+     var rectY= rect.getY();
+     var imgY= img1.getY();
+
+    var resultRect = rectX + rectY;
+    var resultImg = imgX + imgY;
+    var result = resultRect - resultImg;
+
+    if((result == 125 || result == -125 || result == 110 || result == -110)){
+        img1.setX(rectX);
+        rect.setX(imgX);
+        img1.setY(rectY);
+        rect.setY(imgY);
+               movescounter++;
+    }
+
+
+    layer.draw();
+        moveCounter(); 
+       if(shufflecounter != 0){
+  
+    Tween();
+    }
+    });
+
+
+   img2.on("click", function(){
+
+        
+
+     var rectX= rect.getX();
+     var imgX= img2.getX();
+
+     var rectY= rect.getY();
+     var imgY= img2.getY();
+
+    var resultRect = rectX + rectY;
+    var resultImg = imgX + imgY;
+    var result = resultRect - resultImg;
+
+    if((result == 125 || result == -125 || result == 110 || result == -110)){
+        img2.setX(rectX);
+        rect.setX(imgX);
+        img2.setY(rectY);
+        rect.setY(imgY);
+               movescounter++;
+    }
+
+
+    layer.draw();
+        moveCounter(); 
+
+       if(shufflecounter != 0){
+    
+    Tween();
+    }
+    });
+
+   img3.on("click", function(){
+
+        
+
+     var rectX= rect.getX();
+     var imgX= img3.getX();
+
+     var rectY= rect.getY();
+     var imgY= img3.getY();
+
+    var resultRect = rectX + rectY;
+    var resultImg = imgX + imgY;
+    var result = resultRect - resultImg;
+
+    if((result == 125 || result == -125 || result == 110 || result == -110)){
+        img3.setX(rectX);
+        rect.setX(imgX);
+        img3.setY(rectY);
+        rect.setY(imgY);
+               movescounter++;
+    }
+
+
+    layer.draw();
+        moveCounter(); 
+
+       if(shufflecounter != 0){
+ 
+    Tween();
+    }
+    });
+
+
+
+
+
+   img4.on("click", function(){
+
+        
+
+     var rectX= rect.getX();
+     var imgX= img4.getX();
+
+     var rectY= rect.getY();
+     var imgY= img4.getY();
+
+    var resultRect = rectX + rectY;
+    var resultImg = imgX + imgY;
+    var result = resultRect - resultImg;
+
+    if((result == 125 || result == -125 || result == 110 || result == -110)){
+        img4.setX(rectX);
+        rect.setX(imgX);
+        img4.setY(rectY);
+        rect.setY(imgY);
+               movescounter++;
+    }
+
+
+    layer.draw();
+        moveCounter(); 
+       if(shufflecounter != 0){
+    
+    Tween();
+    }
+    });
+
+
+
+   img5.on("click", function(){
+
+     var rectX= rect.getX();
+     var imgX= img5.getX();
+
+     var rectY= rect.getY();
+     var imgY= img5.getY();
+
+    var resultRect = rectX + rectY;
+    var resultImg = imgX + imgY;
+    var result = resultRect - resultImg;
+
+    if((result == 125 || result == -125 || result == 110 || result == -110)){
+        img5.setX(rectX);
+        rect.setX(imgX);
+        img5.setY(rectY);
+        rect.setY(imgY);
+               movescounter++;
+    }
+
+
+    layer.draw();
+        moveCounter(); 
+
+       if(shufflecounter != 0){
+  
+    Tween();
+    }
+    });
+
+      img6.on("click", function(){
+
+        
+
+     var rectX= rect.getX();
+     var imgX= img6.getX();
+
+     var rectY= rect.getY();
+     var imgY= img6.getY();
+
+    var resultRect = rectX + rectY;
+    var resultImg = imgX + imgY;
+    var result = resultRect - resultImg;
+
+    if((result == 125 || result == -125 || result == 110 || result == -110)){
+        img6.setX(rectX);
+        rect.setX(imgX);
+        img6.setY(rectY);
+        rect.setY(imgY);
+               movescounter++;
+    }
+
+
+    layer.draw();
+        moveCounter(); 
+       if(shufflecounter != 0){
+  
+    Tween();
+    }
+    });
+
+
+    img7.on("click", function(){
+
+        
+
+     var rectX= rect.getX();
+     var imgX= img7.getX();
+
+     var rectY= rect.getY();
+     var imgY= img7.getY();
+
+    var resultRect = rectX + rectY;
+    var resultImg = imgX + imgY;
+    var result = resultRect - resultImg;
+
+    if((result == 125 || result == -125 || result == 110 || result == -110)){
+        img7.setX(rectX);
+        rect.setX(imgX);
+        img7.setY(rectY);
+        rect.setY(imgY);
+               movescounter++;
+    }
+
+    layer.draw();
+        moveCounter(); 
+       if(shufflecounter != 0){
+   
+    Tween();
+    }
+    });
+
+
+
+
+      
+      // add the shape to the layer
+      layer.add(img0);
+      layer.add(img1);
+      layer.add(img2);
+      layer.add(img3);
+      layer.add(img4);
+      layer.add(img5);
+      layer.add(img6);
+      layer.add(img7);
+      //layer.add(img8);
+      layer.add(rect);
+
+
+      // add the layer to the stage
+      stage.add(layer);
+
+
+
+     var tween0 = new Konva.Tween({
+        node: img0,
+        duration: 1,
+        x: 55,
+        y: 60,
+        opacity: 1,
+    });
+
+      var tween1 = new Konva.Tween({
+        node: img1,
+        duration: 1,
+        x: 160,
+        y: 60,
+        opacity: 1,
+    });
+
+
+      var tween2= new Konva.Tween({
+        node: img2,
+        duration: 1,
+        x: 265,
+        y: 60,
+        opacity: 1,
+    });
+
+    var tween3= new Konva.Tween({
+        node: img3,
+        duration: 1,
+        x: 55,
+        y: 175,
+        opacity: 1,
+    });
+
+    var tween4= new Konva.Tween({
+        node: img4,
+        duration: 1,
+        x: 160,
+        y: 175,
+        opacity: 1,
+    });
+
+        var tween5= new Konva.Tween({
+        node: img5,
+        duration: 1,
+        x: 265,
+        y: 175,
+        opacity: 1,
+    });
+
+             var tween6= new Konva.Tween({
+        node: img6,
+        duration: 1,
+        x: 55,
+        y: 290,
+        opacity: 1,
+    });
+
+   var tween7= new Konva.Tween({
+        node: img7,
+        duration: 1,
+        x: 160,
+        y: 290,
+        opacity: 1,
+    });
+
+      var tweenrect= new Konva.Tween({
+        node: rect,
+        duration: 1,
+        x: 265,
+        y: 289,
+        opacity: 1,
+    });
+
+
+
+function Tween(){
+    if(img0.getX() == 50 && img2.getX() == 270 && img4.getX() == 160 && img6.getX() == 50 && img5.getY() == 175 && rect.getY() == 300 && img7.getX() == 160){
+    setTimeout(function() {
+        tween0.play();
+        tween1.play();
+        tween2.play();
+        tween3.play();
+        tween5.play();
+        tween6.play();
+        tween7.play();
+        tweenrect.play();
+
+    }, 100);
+        alert("Congratulations! you have completed the puzzle in "+movescounter+" moves!");}
+}
+
+$('#merge').click(function(){
+    setTimeout(function() {
+        tween0.play();
+        tween1.play();
+        tween2.play();
+        tween3.play();
+        tween4.play();
+        tween5.play();
+        tween6.play();
+        tween7.play();
+        tweenrect.play();
+
+    }, 100);
+}
+    )};
+
+    loadImages(sources, function(images) {
+        draw(images);
+    });
+
+  </script>
+</body> 
+</html>
